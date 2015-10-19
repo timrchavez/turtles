@@ -30,13 +30,14 @@ def parse_log(logfile, play, min_duration):
         "|October|November|December) \d{4}\s+\d{2}:\d{2}:\d{2} \+0000) "
         "\((?P<duration>\d+:\d+:\d+\.\d+)\)\s+(?P<total_time>\d+:\d+:\d+\."
         "\d+)")
-    tasks = {}
+    task_counts = {}
     base_date = datetime(1901, 1, 1, 0, 0, 0, 0, pytz.UTC)
+    last_task = None
     last_total_time = timedelta(0)
     with open(logfile) as log:
         current_play = None
-        current_group = 4
-        print "task;start;end;label;min_duration;color\n"
+        current_group = 0
+        print "task;start;end;label;min_duration;color"
         for line in log:
             match = play_re.search(line)
             if match:
@@ -59,26 +60,22 @@ def parse_log(logfile, play, min_duration):
                         microseconds=duration.microsecond
                     )
                     total_time = last_total_time + duration
-                    group = 1
-                    if duration.total_seconds() > min_duration.total_seconds():
-                        group = current_group
-                        task = "{0} | {1}".format(current_play, task)
-                        if task in tasks:
-                            tasks[task] += 1
-                        else:
-                            tasks[task] = 1
-                        seen = tasks[task]
-                        task = "{0} #{1}".format(task, seen)
-                        label = "{0}={1}".format(task, duration.total_seconds()
-                        )
-                        print "{0};{1};{2};{3};{4};{5}".format(
-                            task,
-                            base_date + last_total_time,
-                            base_date + total_time,
-                            label,
-                            min_duration.total_seconds(),
-                            group
-                        )
+                    if duration.total_seconds() < min_duration.total_seconds():
+                        continue
+                    full_task = "{0} | {1}".format(current_play, last_task)
+                    if full_task in task_counts:
+                        task_counts[full_task] += 1
+                    else:
+                        task_counts[full_task] = 1
+                    print "{0};{1};{2};{3};{4};{5}".format(
+                        "{0} #{1}".format(full_task, task_counts[full_task]),
+                        base_date + last_total_time,
+                        base_date + total_time,
+                        "{0}={1}".format(full_task, duration.total_seconds()),
+                        min_duration.total_seconds(),
+                        current_group
+                    )
+                    last_task = task
                     last_total_time = total_time
 
 
