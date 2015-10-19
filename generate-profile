@@ -1,0 +1,32 @@
+#!/usr/bin/env python
+
+import argparse
+import subprocess
+import sys
+
+
+def generate_profile(csvfile, imagefile, title):
+    proc = subprocess.Popen(
+        ["./profile.R",
+         "datafile='%s'" % csvfile,
+         "imagefile='%s'" % imagefile,
+         "title='%s'" % title],
+        stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    stdout, stderr = proc.communicate()
+    if proc.returncode != 0:
+        sys.exit("Profile generation failed!\nOUTPUT:\n%s" % stderr)
+
+    print "Wrote: %s" % imagefile
+
+
+def main():
+    args = argparse.ArgumentParser()
+    args.add_argument("--image-file", dest="imagefile", default="profile.png")
+    args.add_argument("--title", default="Ansible Playbook Performance Profile")
+    args.add_argument("csvfile")
+    args = args.parse_args()
+    generate_profile(args.csvfile, args.imagefile, args.title)
+
+
+if __name__ == "__main__":
+    main()
