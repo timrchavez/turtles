@@ -1,10 +1,9 @@
 Turtles
 =======
 
-Turtles is an Ansible Playbook Performance Profiler.  It will let you visualize
-the performance of an ansible playbook run by parsing the ansible logfile into
-a DSV file and then feeding it to an R script which will then generate a graph
-depicting task run times.
+Turtles is a log-based performance profiler.  Parse a log with the appropriate
+time information (see below) into a semicolon delimited DSV and then visualize
+it.
 
 Requirements
 ------------
@@ -16,26 +15,31 @@ Requirements
 Example
 -------
 
-    # ./parse-ansible-log test.log > profile.csv
-    # ./generate-profile profile.csv
+    # turtles parse --parser=ursula_log_parser test.log > graph.csv
+    # turtles graph graph.csv
     Wrote: profile.png
     # eog profile.png
 
-Parsing Notes
--------------
+Parsers
+-------
 
-The log file is parsed line by line.  If a Play is found, it updates the
-"current" Play, and it is used in task labels until the next Play is found.
-When a Task is found, it expects the very next line to be date and time info
-related to that Task.  See below for an example of what the parser expects the
-format to be.  If a Task is run multiple times in the same Play, a number is
-incremented and included in the label to indicate which run of the Task it is.
+Parsing is left as an exercise to the user.  If there is a log you want to
+parse time data from to visualize th progression of events, please create it
+and then contribute it back to turtles.  Your parser should:
 
-### Plays ###
+ 1. Take a log as input
+ 2. Produce a semicolon-delimited DSV file as output
 
-    PLAY [some text]
+Data File Format
+----------------
 
-### Tasks ###
+The graphing library expects as input a semicolon-delimited DSV file with the
+following information:
 
-    TASK: [some text]
-    Saturday 17 October 2015  03:43:31 +0000 (0:00:19.617)       2:49:02.025
+    event;start;end;label;color
+
+ * event - the thing being measured
+ * start - the start time of the event (format: "%Y-%m-%d %H:%M:%OS3")
+ * end - the end of the of the event (format: "%Y-%m-%d %H:%M:%OS3")
+ * label - the label you want printed next to the line segment for the event
+ * color - the color of the line segment for the event

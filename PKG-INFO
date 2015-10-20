@@ -1,0 +1,17 @@
+Metadata-Version: 1.1
+Name: turtles
+Version: 0.1
+Summary: Extendible log parsing and performance analysis tool
+Home-page: http://github.org/timrchavez/turtles
+Author: Timothy R. Chavez
+Author-email: timrchavez@gmail.com
+License: UNKNOWN
+Platform: UNKNOWN
+Classifier: Environment :: Linux
+Classifier: Intended Audience :: Information Technology
+Classifier: Intended Audience :: System Administrators
+Classifier: License :: OSI Approved :: Apache Software License
+Classifier: Operating System :: POSIX :: Linux
+Classifier: Programming Language :: Python
+Classifier: Programming Language :: Python :: 2
+Classifier: Programming Language :: Python :: 2.7

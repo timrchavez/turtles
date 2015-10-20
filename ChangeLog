@@ -1,0 +1,6 @@
+CHANGES
+=======
+
+* Fix off-by-one error
+* Add missing license information
+* Initial commit

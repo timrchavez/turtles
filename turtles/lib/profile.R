@@ -37,8 +37,8 @@ df <- read.csv2(datafile)
 df$start <- as.POSIXct(strftime(df$start, "%Y-%m-%d %H:%M:%OS3"), tz="utc")
 df$end <- as.POSIXct(strftime(df$end, "%Y-%m-%d %H:%M:%OS3"), tz="utc")
 # HACK: Enforce ordering on Y-axis
-df$task <- as.character(df$task)
-df$task <- factor(df$task, levels=rev(unique(df$task)))
+df$event <- as.character(df$event)
+df$event <- factor(df$event, levels=rev(unique(df$event)))
 
 # Create the limits of a datetime continuum
 padding <- 3600 * 1.5
@@ -55,7 +55,6 @@ colfunc<-colorRampPalette(c("hotpink","tomato1","springgreen","royalblue"))
 p <- ggplot(df, aes(colour = color)) +
     ggtitle(title) +
     ylab("") +
-    xlab(paste("task duration", ">", head(df$min_duration), "s")) +
     theme_minimal() +
     theme(legend.position = "none",
         text=element_text(colour = "white"),
@@ -71,7 +70,7 @@ p <- ggplot(df, aes(colour = color)) +
         panel.grid.minor = element_blank()) +
     scale_colour_gradientn(colours = colfunc(tail(df,1)$color)) +
     scale_x_datetime(breaks = date_breaks("15 min"), labels = date_format("%R"), limits=limits) +
-    geom_segment(aes(x = start, xend = end, y = task, yend = task), size = 1) +
-    geom_text(aes(x = end, y = task, label = label), size = 1, hjust = -0.02) +
+    geom_segment(aes(x = start, xend = end, y = event, yend = event), size = 1) +
+    geom_text(aes(x = end, y = event, label = label), size = 1, hjust = -0.02) +
     ggsave(imagefile, height = par("din")[2] * 1.25)
 
