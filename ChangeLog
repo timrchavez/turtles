@@ -1,6 +1,8 @@
 CHANGES
 =======
 
+* Check that a valid parser is specified
+* Overhaul of turtles to be a more generic tool
 * Fix off-by-one error
 * Add missing license information
 * Initial commit

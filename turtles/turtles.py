@@ -15,6 +15,7 @@
 
 import argparse
 import inspect
+import sys
 
 
 from lib import parsers
@@ -80,10 +81,14 @@ def main():
     args = parser.parse_args()
 
     if args.which == "parse":
-        log_parsers[args.parser].parse(args.logfile, args.min_duration)
+        if args.parser in log_parsers:
+            log_parsers[args.parser].parse(args.logfile, args.min_duration)
+        else:
+            sys.exit("Please specify a valid parser")
     elif args.which == "graph":
         print "Wrote: " + Graph.render(args.dsvfile, args.imagefile, args.title),
         print
 
 
+if __name__ == "__main__":
     main()
