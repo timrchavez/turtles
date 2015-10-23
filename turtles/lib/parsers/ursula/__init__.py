@@ -23,9 +23,10 @@ PLAY_RE = re.compile("PLAY \[(?P<play>[\w ]+)\]")
 DATE_RE = re.compile(
     "(?P<date>(Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday) "
     "\d+ (January|February|March|April|May|June|July|August|September"
-    "|October|November|December) \d{4}\s+\d{2}:\d{2}:\d{2} \+0000) "
+    "|October|November|December) \d{4}\s+\d{2}:\d{2}:\d{2} (\+|\-)\d{4}) "
     "\((?P<duration>\d+:\d+:\d+\.\d+)\)\s+(?P<total_time>\d+:\d+:\d+\."
     "\d+)")
+FACTS_RE = re.compile("GATHERING FACTS")
 
 
 class UrsulaLogParser(object):
@@ -34,6 +35,11 @@ class UrsulaLogParser(object):
 
     @classmethod
     def parse(cls, logfile, duration):
+        base_date = datetime(1901, 1, 1, 0, 0, 0, 0, pytz.UTC)
+        current_play = None
+        current_color = 0
+        last_task = None
+        last_total_time = timedelta(0)
         min_duration = datetime.strptime(duration, "%H:%M:%S.%f")
         min_duration = timedelta(
             hours=min_duration.hour,
@@ -42,26 +48,34 @@ class UrsulaLogParser(object):
             microseconds=min_duration.microsecond
         )
         task_counts = {}
-        base_date = datetime(1901, 1, 1, 0, 0, 0, 0, pytz.UTC)
-        last_task = None
-        last_total_time = timedelta(0)
         with open(logfile) as log:
-            current_play = None
-            current_group = 0
             print "event;start;end;label;color"
             for line in log:
                 match = PLAY_RE.search(line)
                 if match:
                     current_play = match.group("play")
-                    current_group += 1
+                    current_color += 1
+
+                if current_play is None:
                     continue
+
+                task = None
+
+                match = FACTS_RE.search(line)
+                if match:
+                    task = "Gathering Facts"
+
                 match = TASK_RE.search(line)
-                if not match:
+                if match:
+                    task = match.group("task")
+
+                if task is None:
                     continue
-                task = match.group("task")
+
                 match = DATE_RE.search(next(log))
                 if not match:
                     continue
+
                 duration = datetime.strptime(
                     match.group("duration"), "%H:%M:%S.%f")
                 duration = timedelta(
@@ -70,20 +84,24 @@ class UrsulaLogParser(object):
                     seconds=duration.second,
                     microseconds=duration.microsecond
                 )
+
                 total_time = last_total_time + duration
-                if duration.total_seconds() < min_duration.total_seconds():
-                    continue
-                full_task = "{0} | {1}".format(current_play, last_task)
-                if full_task in task_counts:
-                    task_counts[full_task] += 1
-                else:
-                    task_counts[full_task] = 1
-                print "{0};{1};{2};{3};{4}".format(
-                    "{0} #{1}".format(full_task, task_counts[full_task]),
-                    base_date + last_total_time,
-                    base_date + total_time,
-                    "{0}={1}".format(full_task, duration.total_seconds()),
-                    current_group
-                )
+
+                if last_task:
+                    if duration.total_seconds() < min_duration.total_seconds():
+                        continue
+
+                    full_task = "{0} | {1}".format(current_play, last_task)
+                    if full_task in task_counts:
+                        task_counts[full_task] += 1
+                    else:
+                        task_counts[full_task] = 1
+                    print "{0};{1};{2};{3};{4}".format(
+                        "{0} #{1}".format(full_task, task_counts[full_task]),
+                        base_date + last_total_time,
+                        base_date + total_time,
+                        "{0}={1}".format(full_task, duration.total_seconds()),
+                        current_color
+                    )
                 last_task = task
                 last_total_time = total_time
