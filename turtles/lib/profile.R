@@ -23,6 +23,7 @@ require("grid")
 
 # Default settings
 title = "unset title"
+subtitle = ""
 datafile = "profile.csv"
 imagefile = "profile.png"
 
@@ -53,8 +54,10 @@ dev.off()
 colfunc<-colorRampPalette(c("hotpink","tomato1","springgreen","royalblue"))
 # Generate plot
 p <- ggplot(df, aes(colour = color)) +
-    ggtitle(title) +
+    # Borrowed from: http://stackoverflow.com/questions/19957536/add-dynamic-subtitle-using-ggplot
+    ggtitle(bquote(atop(.(title), atop(italic(.(subtitle)), "")))) +
     ylab("") +
+    xlab("tasks") +
     theme_minimal() +
     theme(legend.position = "none",
         text=element_text(colour = "white"),

@@ -70,6 +70,11 @@ def main():
         help="Title to appear on graph"
     )
     graph_cmd_parser.add_argument(
+        "--subtitle",
+        default="",
+        help="Subtitle to appear on graph"
+    )
+    graph_cmd_parser.add_argument(
         "dsvfile",
         help=(
             "File containing semicolon-delimited values.  See README.md "
@@ -86,7 +91,8 @@ def main():
         else:
             sys.exit("Please specify a valid parser")
     elif args.which == "graph":
-        print "Wrote: " + Graph.render(args.dsvfile, args.imagefile, args.title),
+        print "Wrote: " + Graph.render(
+            args.dsvfile, args.imagefile, args.title, args.subtitle),
         print
 
 
