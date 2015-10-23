@@ -57,7 +57,7 @@ p <- ggplot(df, aes(colour = color)) +
     # Borrowed from: http://stackoverflow.com/questions/19957536/add-dynamic-subtitle-using-ggplot
     ggtitle(bquote(atop(.(title), atop(italic(.(subtitle)), "")))) +
     ylab("") +
-    xlab("tasks") +
+    xlab("time (s)") +
     theme_minimal() +
     theme(legend.position = "none",
         text=element_text(colour = "white"),
