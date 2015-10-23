@@ -1,6 +1,7 @@
 CHANGES
 =======
 
+* Looks for fact gathering and fix parser
 * Check that a valid parser is specified
 * Overhaul of turtles to be a more generic tool
 * Fix off-by-one error

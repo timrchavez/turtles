@@ -20,7 +20,7 @@ import sys
 
 class Graph(object):
     @classmethod
-    def render(cls, dsvfile, imagefile, title):
+    def render(cls, dsvfile, imagefile, title, subtitle):
         # XXX: ugh :)
         r_script = os.path.join(
             os.path.dirname(
@@ -31,7 +31,8 @@ class Graph(object):
             [r_script,
              "datafile='%s'" % dsvfile,
              "imagefile='%s'" % imagefile,
-             "title='%s'" % title],
+             "title='%s'" % title,
+             "subtitle='%s'" % subtitle],
             stdout=subprocess.PIPE, stderr=subprocess.PIPE
         )
         stdout, stderr = proc.communicate()
