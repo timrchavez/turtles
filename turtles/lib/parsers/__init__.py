@@ -1,1 +1,1 @@
-from ursula import UrsulaLogParser
+from ursula import UrsulaTestLogParser
